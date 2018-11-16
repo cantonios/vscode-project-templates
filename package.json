@@ -1,0 +1,75 @@
+{
+    "name": "project-templates",
+    "displayName": "Project Templates",
+    "description": "Create and apply custom projects templates",
+    "version": "0.0.1",
+    "publisher": "cantonios",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.28.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.openTemplatesFolder",
+        "onCommand:extension.saveProjectAsTemplate",
+        "onCommand:extension.deleteTemplate"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "VSCode File Templates Configuration",
+            "properties": {
+                "projectTemplates.author": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "default": null,
+                    "description": "Value to use to replace #{author} variable."
+                },
+                "projectTemplates.company": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "default": null,
+                    "description": "Value to use to replace #{company} variable."
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "extension.openTemplatesFolder",
+                "title": "Open Templates Folder",
+                "category": "Project"
+            },
+            {
+                "command": "extension.saveProjectAsTemplate",
+                "title": "Save Project as Template",
+                "category": "Project"
+            },
+            {
+                "command": "extension.deleteTemplate",
+                "title": "Delete Existing Template",
+                "category": "Project"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.21",
+        "tslint": "^5.8.0",
+        "@types/node": "^8.10.25",
+        "@types/mocha": "^2.2.42"
+    }
+}
