@@ -39,6 +39,10 @@ See [CHANGELOG](./CHANGELOG.md) for release notes.
 
 ## Usage
 
+This plugin currently only supports single-root projects.  
+
+As a work-around to create a multi-root project template, add all desired template folders and corresponding `code-workspace` file into a single parent directory, and save the template from the parent.  When creating a new project from this template, once all files are copied, VSCode should detect the new workspace file and ask you if you wish to open it as a workspace.
+
 ### Creating a Project from a Template
 
 * In VSCode, open a folder that will contain your new project.  Use the Command Palette to execute the command "Project: Create Project From Template".  A list of available templates should appear. Select the template and the contents of the template will be copied to the current root workspace directory.
