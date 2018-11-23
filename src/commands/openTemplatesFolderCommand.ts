@@ -15,18 +15,13 @@ import TemplatesManager from "../templateManager";
  */
 export function run(templateManager: TemplatesManager, args: any) {
 
-	// read templates
-	let templates = templateManager.getTemplates();
-	
-	for (let template of templates) {
-		console.log("Found template " + template);
-	}
+	// load latest configuration
+	templateManager.updateConfiguration(vscode.workspace.getConfiguration('projectTemplates'));
 
-    // gets the target folder. if its invoked from a context menu,
-    // we use that reference, otherwise we use the file system path
-    let targetFolder = args ? args.fsPath : vscode.workspace.rootPath;
-	console.log("Target folder: " + targetFolder);
+	// create template directory
+	templateManager.createTemplatesDirIfNotExists();
 
+	// open template directory
 	fmutils.openFolderInExplorer(templateManager.getTemplatesDir());
 
     

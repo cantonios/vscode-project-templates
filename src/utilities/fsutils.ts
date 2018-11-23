@@ -4,6 +4,68 @@ import fs = require("fs");
 import path = require("path");
 
 /**
+ * Recursively apply a function on a pair of files or directories from source to dest
+ * @param src source file or folder
+ * @param dest destination file or folder
+ * @param func function to apply between src and dest
+ * @throws Error if function fails
+ */
+export async function recursiveApplyInDir(src : string, dest : string, 
+	func : (src : string, dest : string) => any) {
+
+	// apply function between src/dest
+	func(src, dest);
+
+	if (fs.lstatSync(src).isDirectory()) {
+		
+		// read contents of source directory and iterate
+		const entries : string[] = fs.readdirSync(src);
+
+		for(let entry of entries) {
+			
+			// full path of src/dest
+			const srcPath = path.join(src,entry);
+			const destPath = path.join(dest,entry);
+			
+			// if directory, recursively copy, otherwise copy file
+			recursiveApplyInDir(srcPath, destPath, func);
+		}
+	}
+}
+
+/**
+ * Recursively apply a function on a pair of files or directories from source to dest.
+ * Synchronous version.
+ * 
+ * @param src source file or folder
+ * @param dest destination file or folder
+ * @param func function to apply between src and dest
+ * @throws Error if function fails
+ */
+export async function recursiveApplyInDirSync(src : string, dest : string, 
+	func : (src : string, dest : string) => Promise<any>) {
+
+	// apply function between src/dest
+	await func(src, dest);
+
+	if (fs.lstatSync(src).isDirectory()) {
+		
+		// read contents of source directory and iterate
+		const entries : string[] = fs.readdirSync(src);
+
+		for(let entry of entries) {
+			
+			// full path of src/dest
+			const srcPath = path.join(src,entry);
+			const destPath = path.join(dest,entry);
+			
+			// if directory, recursively copy, otherwise copy file
+			await recursiveApplyInDirSync(srcPath, destPath, func);
+		}
+	}
+}
+
+/**
  * Recursively copy folder from src to dest
  * @param src source folder
  * @param dest destination folder

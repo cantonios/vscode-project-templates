@@ -4,9 +4,13 @@
     "description": "Create and apply custom projects templates",
     "version": "0.0.1",
     "publisher": "cantonios",
+    "repository": {
+        "type": "github",
+        "url": "https://github.com/cantonios/vscode-project-templates"
+    },
     "license": "MIT",
     "engines": {
-        "vscode": "^1.28.0"
+        "vscode": "^1.20.0"
     },
     "categories": [
         "Other"
@@ -14,29 +18,42 @@
     "activationEvents": [
         "onCommand:extension.openTemplatesFolder",
         "onCommand:extension.saveProjectAsTemplate",
-        "onCommand:extension.deleteTemplate"
+        "onCommand:extension.deleteTemplate",
+        "onCommand:extension.createProjectFromTemplate"
     ],
     "main": "./out/extension",
     "contributes": {
         "configuration": {
             "type": "object",
-            "title": "VSCode File Templates Configuration",
+            "title": "VSCode Project Templates Configuration",
             "properties": {
-                "projectTemplates.author": {
+                "projectTemplates.projectTemplatesDir": {
                     "type": [
                         "string",
                         "null"
                     ],
-                    "default": null,
-                    "description": "Value to use to replace #{author} variable."
+                    "description": "Directory to read/store project template folders"
                 },
-                "projectTemplates.company": {
+                "projectTemplates.usePlaceholders": {
                     "type": [
-                        "string",
-                        "null"
+                        "boolean"
                     ],
-                    "default": null,
-                    "description": "Value to use to replace #{company} variable."
+                    "default": true,
+                    "description": "Look for and replace placeholders in template (e.g. #{author})"
+                },
+                "projectTemplates.placeholderRegExp": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "#{(\\w+)?}",
+                    "description": "Regular expression for detecting placeholders (e.g. \"#{(\\w+?)}\").  The first capture group dictates the placeholder key."
+                },
+                "projectTemplates.placeholders": {
+                    "type": [
+                        "object"
+                    ],
+                    "default": {},
+                    "description": "List of placeholders, in key-value string pairs."
                 }
             }
         },
@@ -54,6 +71,11 @@
             {
                 "command": "extension.deleteTemplate",
                 "title": "Delete Existing Template",
+                "category": "Project"
+            },
+            {
+                "command": "extension.createProjectFromTemplate",
+                "title": "Create Project from Template",
                 "category": "Project"
             }
         ]

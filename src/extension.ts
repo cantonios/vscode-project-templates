@@ -9,6 +9,7 @@ import TemplateManager from './templateManager';
 import OpenTemplatesFolderCommand = require('./commands/openTemplatesFolderCommand');
 import SaveProjectAsTemplateCommand = require('./commands/saveProjectAsTemplateCommand');
 import DeleteTemplateCommand = require('./commands/deleteTemplateCommand');
+import CreateProjectFromTemplateCommand = require('./commands/createProjectFromTemplateCommand');
 
 /**
  * Main entry point for extension
@@ -37,6 +38,11 @@ export function activate(context: vscode.ExtensionContext) {
     let deleteTemplate = vscode.commands.registerCommand('extension.deleteTemplate', 
         DeleteTemplateCommand.run.bind(undefined, templateManager));
     context.subscriptions.push(deleteTemplate);
+
+    // create project from template
+    let createProjectFromTemplate = vscode.commands.registerCommand('extension.createProjectFromTemplate',
+        CreateProjectFromTemplateCommand.run.bind(undefined, templateManager));
+    context.subscriptions.push(createProjectFromTemplate);
 
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
