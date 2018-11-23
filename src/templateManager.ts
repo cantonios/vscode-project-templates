@@ -58,7 +58,7 @@ export default class TemplateManager {
      * @return {string}
      */
     public getTemplatesDir(): string {
-        let dir = this.config.get('projectTemplatesDir', this.getDefaultTemplatesDir());
+        let dir = this.config.get('templatesDirectory', this.getDefaultTemplatesDir());
         if (!dir) {
             dir = this.getDefaultTemplatesDir();
         }

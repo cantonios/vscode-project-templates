@@ -27,7 +27,7 @@
             "type": "object",
             "title": "VSCode Project Templates Configuration",
             "properties": {
-                "projectTemplates.projectTemplatesDir": {
+                "projectTemplates.templatesDirectory": {
                     "type": [
                         "string",
                         "null"

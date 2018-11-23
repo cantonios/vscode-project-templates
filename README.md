@@ -1,65 +1,92 @@
-# project-templates README
 
-This is the README for your extension "project-templates". After writing up a brief description, we recommend including the following sections.
+# Project Templates VSCode Extension
+
+[Visual Studio code](https://code.visualstudio.com) extenstion that allows you to quickly create new projects based on defined templates. 
+
+Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file-templates-ext).
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+* Create a new project from a template directory
+* Save the current project as a template
+* Use of variable placeholders for easy configuration
 
-For example if there is an image subfolder under your extension project workspace:
+<!-- ## Screenshots
 
-\!\[feature X\]\(images/feature-x.png\)
+![preview](images/preview01.jpg) -->
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Install
 
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+On Visual Studio code, Press F1 to open the command menu and type ```ext install project-templates```.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+* `projectTemplates.templatesDirectory`: directory containing templates
+* `projectTemplates.usePlaceholders`: activate variable placeholder substitution
+* `projectTemplates.placeholders`: dictionary of placeholder key-value pairs for common substitutions
+* `projectTemplates.placeholderRegExp`: regular expression to use for detecting placeholders
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+* None
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+See [CHANGELOG](./CHANGELOG.md) for release notes.
 
-### 1.0.0
 
-Initial release of ...
+## Usage
 
-### 1.0.1
+### Creating a Project from a Template
 
-Fixed issue #.
+* In VSCode, open a new folder that will contain your project.  Use the Command Palette to execute the command "Project: Create Project From Template".  A list of available templates should appear. Select the template and the contents of the template will be copied to the current root workspace directory.
 
-### 1.1.0
+### Saving a Project as a Template
 
-Added features X, Y, and Z.
+* Create the desired template project in your current root workspace directory.  Use the Command Palette to execute the command "Project: Save Project As Template".  Enter the name for your template.  The contents of your root directory will then be copied to a new template folder.
 
------------------------------------------------------------------------------------------------------------
+## Placeholders
 
-## Working with Markdown
+Variable placeholders can be used in templates in the following way:
 
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+```
+normal text #{placeholder_key}
+```
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
+When a file is created from the template, the user is prompted with a value to enter.  Placeholders can also be used in filenames.
 
-### For more information
+## Templates Location
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+By default, this extension expects the file templates to be placed at the following location, depending of youur OS:
 
-**Enjoy!**
+Linux:
+
+```
+$HOME/.config/Code/User/ProjectTemplates
+```
+
+Mac:
+
+```
+$HOME/Library/Application Support/Code/User/ProjectTemplates
+```
+
+Windows:
+
+```
+C:\Users\User\AppData\Roaming\Code\User\ProjectTemplates
+```
+
+However, you can change the default location by adding the following to your user or workspace settings:
+
+```
+"projectTemplates.templatesDir": "path/to/my/templates"
+```
+
+
+
+
+
+
