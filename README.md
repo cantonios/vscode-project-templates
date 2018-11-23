@@ -82,7 +82,7 @@ C:\Users\User\AppData\Roaming\Code\User\ProjectTemplates
 However, you can change the default location by adding the following to your user or workspace settings:
 
 ```
-"projectTemplates.templatesDir": "path/to/my/templates"
+"projectTemplates.templatesDirectory": "path/to/my/templates"
 ```
 
 

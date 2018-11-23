@@ -388,7 +388,7 @@ export default class TemplateManager {
                         
                         // ask if user wants to replace, otherwise prompt for new filename
                         let reldest = path.relative(workspace, dest);
-                        let choice = await vscode.window.showQuickPick(["Yes", "No", "Cancel"], { 
+                        let choice = await vscode.window.showQuickPick(["Yes", "No", "Skip"], { 
                             placeHolder: `Destination file "${reldest}" already exists.  Do you wish to replace it?`
                         });
 
@@ -417,7 +417,7 @@ export default class TemplateManager {
                                 dest = path.join(workspace, dest);
                             }
                         } else {
-                            // cancel
+                            // skip
                             return;
                         } // overwrite or rename
                     }  // if file
