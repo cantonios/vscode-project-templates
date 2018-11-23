@@ -388,7 +388,7 @@ export default class TemplateManager {
                         
                         // ask if user wants to replace, otherwise prompt for new filename
                         let reldest = path.relative(workspace, dest);
-                        let choice = await vscode.window.showQuickPick(["Yes", "No", "Skip"], { 
+                        let choice = await vscode.window.showQuickPick(["Yes", "No", "Skip", "Abort"], { 
                             placeHolder: `Destination file "${reldest}" already exists.  Do you wish to replace it?`
                         });
 
@@ -416,10 +416,13 @@ export default class TemplateManager {
                             if (!path.isAbsolute(dest)) {
                                 dest = path.join(workspace, dest);
                             }
-                        } else {
+                        } else if (choice === "Skip") {
                             // skip
-                            return;
-                        } // overwrite or rename
+                            return true;
+                        } else {
+                            // abort
+                            return false;
+                        }// overwrite or rename
                     }  // if file
                 } // while file exists
 
@@ -438,10 +441,51 @@ export default class TemplateManager {
                     }
                 );
             }
+            return true;
         };  // copy function
         
         // actually copy the file recursively
-        await fsutils.recursiveApplyInDirSync(templateDir, workspace, copyFunc);        
+        await this.recursiveApplyInDirSync(templateDir, workspace, copyFunc);        
     }
+
+    /**
+    * Recursively apply a function on a pair of files or directories from source to dest.
+    * 
+    * @param src source file or folder
+    * @param dest destination file or folder
+    * @param func function to apply between src and dest
+    * @return {boolean} if recursion should continue
+    * @throws Error if function fails
+    */
+   private async recursiveApplyInDirSync(src : string, dest : string, 
+        func : (src : string, dest : string) => Promise<boolean>) : Promise<boolean> {
+   
+        // apply function between src/dest
+        let success = await func(src, dest);
+        if (!success) {
+            return false;
+        }
+   
+        if (fs.lstatSync(src).isDirectory()) {
+            
+            // read contents of source directory and iterate
+            const entries : string[] = fs.readdirSync(src);
+    
+            for(let entry of entries) {
+                
+                // full path of src/dest
+                const srcPath = path.join(src,entry);
+                const destPath = path.join(dest,entry);
+                
+                // if directory, recursively copy, otherwise copy file
+                success = await this.recursiveApplyInDirSync(srcPath, destPath, func);
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+   }
 
 } // templateManager
