@@ -1,7 +1,7 @@
 
 # Project Templates VSCode Extension
 
-[Visual Studio code](https://code.visualstudio.com) extenstion that allows you to quickly create new projects based on defined templates. 
+[Visual Studio code](https://code.visualstudio.com) extension that allows you to quickly create new projects based on custom templates. 
 
 Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file-templates-ext).
 
@@ -9,7 +9,7 @@ Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file
 
 * Create a new project from a template directory
 * Save the current project as a template
-* Use of variable placeholders for easy configuration
+* Use of variable placeholders for easy interactive configuration
 
 <!-- ## Screenshots
 
@@ -17,7 +17,7 @@ Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file
 
 ## Install
 
-On Visual Studio code, Press F1 to open the command menu and type ```ext install project-templates```.
+In Visual Studio code, Press F1 to open the command menu and type ```ext install project-templates```.
 
 ## Extension Settings
 
@@ -41,7 +41,7 @@ See [CHANGELOG](./CHANGELOG.md) for release notes.
 
 ### Creating a Project from a Template
 
-* In VSCode, open a new folder that will contain your project.  Use the Command Palette to execute the command "Project: Create Project From Template".  A list of available templates should appear. Select the template and the contents of the template will be copied to the current root workspace directory.
+* In VSCode, open a folder that will contain your new project.  Use the Command Palette to execute the command "Project: Create Project From Template".  A list of available templates should appear. Select the template and the contents of the template will be copied to the current root workspace directory.
 
 ### Saving a Project as a Template
 
@@ -59,7 +59,7 @@ When a file is created from the template, the user is prompted with a value to e
 
 ## Templates Location
 
-By default, this extension expects the file templates to be placed at the following location, depending of youur OS:
+By default, this extension expects the project templates to be placed at the following location, depending of your OS:
 
 Linux:
 
