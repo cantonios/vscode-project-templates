@@ -84,10 +84,14 @@
         "menus": {
             "explorer/context": [
               {
-                "command": "extension.createProjectFromTemplate"
+                "command": "extension.createProjectFromTemplate",
+                "when": "explorerResourceIsFolder",
+                "group": "projectTemplates@1"
               },
               {
-                "command": "extension.saveProjectAsTemplate"
+                "command": "extension.saveProjectAsTemplate",
+                "when": "explorerResourceIsFolder",
+                "group": "projectTemplates@2"
               }
             ]
           }

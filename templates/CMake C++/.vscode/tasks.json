@@ -1,0 +1,52 @@
+{
+    "version": "2.0.0",
+    "options": {
+        "cwd": "${workspaceRoot}/build"
+    },
+    "tasks": [
+		{
+			"label": "CMake Build",
+			"command": "cmake",
+			"args": [
+				"-DCMAKE_BUILD_TYPE=Debug",
+				".."
+			],
+			// specify MinGW generator
+			"windows": {
+				"args": [
+					"-G",
+					"MinGW Makefiles",
+					"-DCMAKE_BUILD_TYPE=Debug",
+					".."
+				],
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Build",
+			"dependsOn": "CMake Build",
+			"command": "make",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Build and Run",
+			"dependsOn": "Make",
+			"command": "#{PROJECT_NAME}",
+			"windows": {
+				"command": "#{PROJECT_NAME}.exe"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		}
+	]
+}

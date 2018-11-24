@@ -3,13 +3,13 @@
 
 [Visual Studio code](https://code.visualstudio.com) extension that allows you to quickly create new projects based on custom templates. 
 
-Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file-templates-ext).
+Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file-templates-ext), which is itself inspired by [a similar Atom Extension](https://atom.io/packages/file-templates).
 
 ## Features
 
 * Create a new project from a template directory
-* Save the current project as a template
-* Use of variable placeholders for easy interactive configuration
+* Save the current project as a template directory
+* Use customizable placeholders for easy interactive configuration
 
 <!-- ## Screenshots
 
@@ -23,7 +23,7 @@ In Visual Studio code, Press F1 to open the command menu and type ```ext install
 
 This extension contributes the following settings:
 
-* `projectTemplates.templatesDirectory`: directory containing templates
+* `projectTemplates.templatesDirectory`: directory containing project templates
 * `projectTemplates.usePlaceholders`: activate variable placeholder substitution
 * `projectTemplates.placeholders`: dictionary of placeholder key-value pairs for common substitutions
 * `projectTemplates.placeholderRegExp`: regular expression to use for detecting placeholders
@@ -39,27 +39,46 @@ See [CHANGELOG](./CHANGELOG.md) for release notes.
 
 ## Usage
 
-This plugin currently only supports single-root projects.  
-
-As a work-around to create a multi-root project template, add all desired template folders and corresponding `code-workspace` file into a single parent directory, and save the template from the parent.  When creating a new project from this template, once all files are copied, VSCode should detect the new workspace file and ask you if you wish to open it as a workspace.
+Extension commands can be executed from the Command Palette or from the context menu when selecting a folder.
 
 ### Creating a Project from a Template
 
-* In VSCode, open a folder that will contain your new project.  Use the Command Palette to execute the command "Project: Create Project From Template".  A list of available templates should appear. Select the template and the contents of the template will be copied to the current root workspace directory.
+* In VSCode, open a folder that will contain your new project.  Use the Command Palette to execute the command "Project: Create Project From Template".  A list of available templates should appear. Select the desired template.  The contents of the template will be copied to the current root workspace directory.
+* If called from the context menu, the contents of the template will instead be copied to the selected folder.
 
 ### Saving a Project as a Template
 
-* Create the desired template project in your current root workspace directory.  Use the Command Palette to execute the command "Project: Save Project As Template".  Enter the name for your template.  The contents of your root directory will then be copied to a new template folder.
+* Create the desired template project in your current root workspace directory.  Use the Command Palette to execute the command "Project: Save Project As Template".  Enter the name for your template.  The contents of your root workspace directory will be copied to a new template folder.
+* If called from the context menu, the contents of the selected folder will be copied to the new template folder.
 
 ## Placeholders
 
 Variable placeholders can be used in templates in the following way:
 
 ```
-normal text #{placeholder_key}
+Author: #{author}
+Title:  #{title}
 ```
 
-When a file is created from the template, the user is prompted with a value to enter.  Placeholders can also be used in filenames.
+When a file is created from a template containing placeholders, the user is prompted for a value to enter.  Placeholders can also be used in filenames.
+
+* Processing of placeholders can be deactivated by setting the extension property 		  
+  ```
+  "projectTemplates.usePlaceholders": false
+  ```
+* The format of placeholders is governed by a configurable regular expression which can be set through
+  ```
+  "projectTemplates.placeholderRegExp":  "#{(\w+?)}"
+  ```
+  The first capture group in the regular expression is used to idenfity the placeholder key.
+* A set of common placeholder key-values pairs can be specified in a dictionary:
+  ```
+  "projectTemplates.placeholders": {
+	"author" : "John Smith",
+	"company": "Wonderful Widgets Inc."
+  }
+  ```
+  These placeholders will be replaced without prompting.
 
 ## Templates Location
 
