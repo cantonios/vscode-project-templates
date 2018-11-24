@@ -2,8 +2,10 @@
     "name": "project-templates",
     "displayName": "Project Templates",
     "description": "Create and apply custom projects templates",
-    "version": "0.0.1",
+    "version": "1.0.1",
+    "author": "C. Antonio Sánchez",
     "publisher": "cantonios",
+    "homepage": "https://github.com/cantonios/vscode-project-templates",
     "repository": {
         "type": "github",
         "url": "https://github.com/cantonios/vscode-project-templates"
@@ -78,7 +80,17 @@
                 "title": "Create Project from Template",
                 "category": "Project"
             }
-        ]
+        ],
+        "menus": {
+            "explorer/context": [
+              {
+                "command": "extension.createProjectFromTemplate"
+              },
+              {
+                "command": "extension.saveProjectAsTemplate"
+              }
+            ]
+          }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

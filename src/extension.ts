@@ -6,6 +6,8 @@ import * as vscode from 'vscode';
 
 // import manager
 import TemplateManager from './templateManager';
+
+// import commands
 import OpenTemplatesFolderCommand = require('./commands/openTemplatesFolderCommand');
 import SaveProjectAsTemplateCommand = require('./commands/saveProjectAsTemplateCommand');
 import DeleteTemplateCommand = require('./commands/deleteTemplateCommand');

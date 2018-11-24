@@ -17,14 +17,49 @@ import fmutils = require("./utilities/fmutils");
  */
 export default class TemplateManager {
 
+    /**
+     * local copy of workspace configuration to maintain consistency between calls
+     */
     config: WorkspaceConfiguration;
 
     constructor(config: WorkspaceConfiguration) {
         this.config = config;
     }
 
+    /**
+     * Updates the current configuration settings
+     * @param config workspace configuration
+     */
     public updateConfiguration(config : WorkspaceConfiguration) {
         this.config = config;
+    }
+
+    /**
+     * Selects a workspace folder.  If args contains an fsPath, then it uses
+     * that.  Otherwise, for single root workspaces it will select the root directory,
+     * or for multi-root will present a chooser to select a workspace.
+     * @param args 
+     */
+    public async selectWorkspace(args : any) : Promise<string> {
+
+        let workspace : string = "";
+
+        // check arguments
+        if (args && args.fsPath) {
+            workspace = args.fsPath;
+        } else if (vscode.workspace.workspaceFolders) {
+            // single or multi-root
+            if (vscode.workspace.workspaceFolders.length === 1) {
+                workspace = vscode.workspace.workspaceFolders[0].uri.fsPath;
+            } else if (vscode.workspace.workspaceFolders.length > 1) {
+                // choose workspace
+                let ws = await vscode.window.showWorkspaceFolderPick();
+                if (ws) {
+                    workspace = ws.uri.fsPath;
+                }
+            }
+        }
+        return workspace;
     }
 
     /**
@@ -388,14 +423,14 @@ export default class TemplateManager {
                         
                         // ask if user wants to replace, otherwise prompt for new filename
                         let reldest = path.relative(workspace, dest);
-                        let choice = await vscode.window.showQuickPick(["Yes", "No", "Skip", "Abort"], { 
-                            placeHolder: `Destination file "${reldest}" already exists.  Do you wish to replace it?`
+                        let choice = await vscode.window.showQuickPick(["Overwrite", "Rename", "Skip", "Abort"], { 
+                            placeHolder: `Destination file "${reldest}" already exists.  What would you like to do?`
                         });
 
-                        if (choice === "Yes") {
+                        if (choice === "Overwrite") {
                             // delete existing file
                             fs.unlinkSync(dest);
-                        } else if (choice === "No") {
+                        } else if (choice === "Rename") {
                             // prompt user for new filename
                             let variableInput = <vscode.InputBoxOptions> {
                                 prompt: "Please enter a new filename",
@@ -432,6 +467,10 @@ export default class TemplateManager {
                     fileContents = await this.resolvePlaceholders(fileContents, placeholderRegExp, placeholders) as Buffer;
                 }
 
+                // ensure directories exist
+                let parent = path.dirname(dest);
+                fsutils.mkdirsSync(parent);
+
                 // write file contents to destination
                 fs.writeFile(dest, fileContents, 
                     function (err) {
@@ -445,7 +484,7 @@ export default class TemplateManager {
         };  // copy function
         
         // actually copy the file recursively
-        await this.recursiveApplyInDirSync(templateDir, workspace, copyFunc);        
+        await this.recursiveApplyInDir(templateDir, workspace, copyFunc);        
     }
 
     /**
@@ -457,7 +496,7 @@ export default class TemplateManager {
     * @return {boolean} if recursion should continue
     * @throws Error if function fails
     */
-   private async recursiveApplyInDirSync(src : string, dest : string, 
+   private async recursiveApplyInDir(src : string, dest : string, 
         func : (src : string, dest : string) => Promise<boolean>) : Promise<boolean> {
    
         // apply function between src/dest
@@ -478,7 +517,7 @@ export default class TemplateManager {
                 const destPath = path.join(dest,entry);
                 
                 // if directory, recursively copy, otherwise copy file
-                success = await this.recursiveApplyInDirSync(srcPath, destPath, func);
+                success = await this.recursiveApplyInDir(srcPath, destPath, func);
                 if (!success) {
                     return false;
                 }
