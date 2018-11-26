@@ -46,9 +46,6 @@ export function activate(context: vscode.ExtensionContext) {
         CreateProjectFromTemplateCommand.run.bind(undefined, templateManager));
     context.subscriptions.push(createProjectFromTemplate);
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "project-templates" is now active!');
 }
 
 // this method is called when your extension is deactivated
