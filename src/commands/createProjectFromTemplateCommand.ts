@@ -24,6 +24,17 @@ export async function run(templateManager: TemplateManager, args: any) {
     templateManager.updateConfiguration(vscode.workspace.getConfiguration('projectTemplates'));
 
     // create project
-    templateManager.createFromTemplate(workspace);    
+    templateManager.createFromTemplate(workspace).then(
+        (template : string | undefined) => {
+            if (template) {
+                vscode.window.showInformationMessage("Created project from template '" + template + "'");
+            } else {
+                vscode.window.showInformationMessage("Aborted copying of template '" + template + "'");
+            }
+        },
+        (reason: any) => {
+            vscode.window.showErrorMessage("Failed to create project from template: " + reason);
+        }
+    );
 
 }

@@ -7,7 +7,6 @@ import path = require("path");
  * Recursively copy folder from src to dest
  * @param src source folder
  * @param dest destination folder
- * @throws Error if copy fails
  */
 export async function copyDir(src : string, dest : string) {
 
@@ -17,11 +16,16 @@ export async function copyDir(src : string, dest : string) {
 	// synchronously create destination if it doesn't exist to ensure 
 	//    its existence before we copy individual items into it
 	if (!fs.existsSync(dest)) {
-		fs.mkdirSync(dest);
+		try {
+			fs.mkdirSync(dest);
+		} catch (err) {
+			return Promise.reject(err);
+		}
 	} else if (!fs.lstatSync(dest).isDirectory()) {
-		throw new Error("Unable to create directory '" + dest + "': already exists as file.");
+		return Promise.reject(new Error("Unable to create directory '" + dest + "': already exists as file."));
 	}
 
+	let promises : Promise<boolean>[] = [];
     for(let entry of entries) {
 		
 		// full path of src/dest
@@ -30,16 +34,27 @@ export async function copyDir(src : string, dest : string) {
 		
 		// if directory, recursively copy, otherwise copy file
         if(fs.lstatSync(srcPath).isDirectory()) {
-            copyDir(srcPath, destPath);
+            promises.push(copyDir(srcPath, destPath));
         } else {
-			fs.copyFile(srcPath, destPath, 
-				(err) => {
-					if (err) {
-						throw err;
-					}
-				});
+			try {
+				fs.copyFileSync(srcPath, destPath);
+			} catch (err) {
+				promises.push(Promise.reject(err));
+			}
         }
-    }
+	}
+
+	await Promise.all(promises).then(
+		(value: boolean[] )  => { 
+			return value; 
+		},
+		(reason: any) => {
+			console.log(reason);
+			return Promise.reject(reason);
+		}
+	);
+
+	return Promise.resolve(true);
 }
 
 /**
@@ -55,28 +70,38 @@ export async function deleteDir(dir : string) {
 				if (fs.lstatSync(fn).isDirectory()) {
 					return deleteDir(fn);
 				} else {
-					return fs.unlink(fn, 
-							(err) => {
-								if (err) {
-									console.log("Failed to delete '" + fn + "':" + err);
-									throw err;
-								}
-							}
-						);
+					try {
+						fs.unlinkSync(fn);
+					} catch (err) {
+						console.error("Failed to delete '" + fn + "':" + err);
+						return Promise.reject(err);
+					}
+					return Promise.resolve(true);
 				}
 			}
 		);
 
-		// wait for everything to delete
-		await Promise.all(promises);
+		// wait for all promises
+		await Promise.all(promises).then(
+			(value: boolean[] )  =>{ 
+				return value; 
+			},
+			(reason: any) => {
+				console.log(reason);
+				return Promise.reject(reason);
+			}
+		);
 		
 		// remove directory
 		try {
 			fs.rmdirSync(dir);
 		} catch(err) {
-			console.log("Failed to remove directory '" + dir + "': " + err);
+			console.error("Failed to remove directory '" + dir + "': " + err);
+			return Promise.reject(err);
 		}
+		return Promise.resolve(true);
 	}
+	return Promise.resolve(false);
 }
 
 /**

@@ -25,7 +25,16 @@ export async function run(templateManager: TemplateManager, args: any) {
             }
 
             // delete template
-            templateManager.deleteTemplate(template);
+            templateManager.deleteTemplate(template).then(
+                (deleted : boolean) => { 
+                    if (deleted) {
+                        vscode.window.showInformationMessage("Deleted template '" + template + "'");
+                    }
+                },
+                (reason : any) => { 
+                    vscode.window.showErrorMessage("Failed to delete template '" + template + "': " + reason);
+                }
+            );
         }
     );
     

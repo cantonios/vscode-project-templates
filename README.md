@@ -23,10 +23,14 @@ In Visual Studio code, Press F1 to open the command menu and type ```ext install
 
 This extension contributes the following settings:
 
-* `projectTemplates.templatesDirectory`: directory containing project templates
-* `projectTemplates.usePlaceholders`: activate variable placeholder substitution
-* `projectTemplates.placeholders`: dictionary of placeholder key-value pairs for common substitutions
-* `projectTemplates.placeholderRegExp`: regular expression to use for detecting placeholders
+```ts
+{
+  "projectTemplates.templatesDirectory": "",    // default directory containing project templates
+  "projectTemplates.usePlaceholders": true,     // activate placeholder substitution
+  "projectTemplates.placeholders": {  },        // dictionary of default placeholder key-value pairs
+  "projectTemplates.placeholderRegExp": "#{(\\w+?)}"  // regular expression to use for detecting placeholders
+}
+```
 
 ## Known Issues
 
@@ -68,7 +72,7 @@ When a file is created from a template containing placeholders, the user is prom
   ```
 * The format of placeholders is governed by a configurable regular expression which can be set through
   ```
-  "projectTemplates.placeholderRegExp":  "#{(\w+?)}"
+  "projectTemplates.placeholderRegExp":  "#{(\\w+?)}"
   ```
   The first capture group in the regular expression is used to idenfity the placeholder key.
 * A set of common placeholder key-values pairs can be specified in a dictionary:
@@ -108,6 +112,9 @@ However, you can change the default location by adding the following to your use
 "projectTemplates.templatesDirectory": "path/to/my/templates"
 ```
 
+### Samples
+
+A set of sample templates can be found [here](https://github.com/cantonios/vscode-project-templates/tree/master/templates)
 
 
 

@@ -64,7 +64,7 @@ export default class TemplateManager {
 
     /**
      * Returns a list of available project templates by reading the Templates Directory.
-     * @returns string[]
+     * @returns list of templates found
      */
     public getTemplates(): string[] {
 
@@ -90,7 +90,7 @@ export default class TemplateManager {
      * If no user configuration is found, the extension will look for
      * templates in USER_DATA_DIR/Code/ProjectTemplates.
      * Otherwise it will look for the path defined in the extension configuration.
-     * @return {string}
+     * @return the templates directory
      */
     public getTemplatesDir(): string {
         let dir = this.config.get('templatesDirectory', this.getDefaultTemplatesDir());
@@ -102,7 +102,7 @@ export default class TemplateManager {
 
     /**
      * Returns the default templates location based on the user OS.
-     * @returns {string}
+     * @returns default OS-specific template directory
      */
     private getDefaultTemplatesDir(): string {
         let userDataDir : string;
@@ -179,12 +179,13 @@ export default class TemplateManager {
     /**
      * Deletes a template from the template root directory
      * @param template name of template
+     * @returns success or failure
      */
     public async deleteTemplate(template : string) {
         
         // no template, cancel
         if (!template) {
-            return;
+            return false;
         }
             
         let templateRoot = this.getTemplatesDir();
@@ -192,22 +193,41 @@ export default class TemplateManager {
 
         if (fs.existsSync(templateDir) && fs.lstatSync(templateDir).isDirectory()) {
             // confirm delete
-            vscode.window.showQuickPick(["Yes", "No"], { 
+            let success = await vscode.window.showQuickPick(["Yes", "No"], { 
                 placeHolder: "Are you sure you wish to delete the project template '" + template + "'?"
             }).then(
                 async (choice) => {
                     if (choice === "Yes") {
                         // delete template
-                        console.log("Deleting template folder '" + templateDir + "'");
-                        fsutils.deleteDir(templateDir);
-                    }
-                });
+                        // console.log("Deleting template folder '" + templateDir + "'");
+                        let ds = await fsutils.deleteDir(templateDir).then(
+                            (value : boolean) => {
+                                return value;
+                            },
+                            (reason : any) => {
+                                return Promise.reject(reason);
+                            }
+                        );
+                        return ds;
+                    } 
+                    return false;
+                },
+                (reason : any) => {
+                    console.log(reason);
+                    return Promise.reject(reason);
+                }
+                );
+
+            return success;
         }
+
+        return false;
     }
 
     /**
      * Saves a workspace as a new template
-     * @param workspace absolute path of workspace
+     * @param  workspace absolute path of workspace
+     * @returns  name of template
      */
     public async saveAsTemplate(workspace : string) {
 
@@ -223,31 +243,42 @@ export default class TemplateManager {
         };
     
         // prompt user
-        vscode.window.showInputBox(inputOptions).then(
+        return await vscode.window.showInputBox(inputOptions).then(
             
-            filename => {
+            async filename => {
     
+                // empty filename defaults to project name
+                if (!filename) {
+                    filename = projectName;
+                }
+
                 // determine template dir
-                let templateDir = path.join(this.getTemplatesDir(), path.basename(filename!));
+                let template = path.basename(filename);
+                let templateDir = path.join(this.getTemplatesDir(), template);
                 console.log("Destination folder: " + templateDir);
     
                 // check if exists
                 if (fs.existsSync(templateDir)) {
                     // confirm over-write
-                    vscode.window.showQuickPick(["Yes", "No"], { 
-                        placeHolder: "Template '" + filename + "' already exists.  Do you wish to overwrite?" 
+                    await vscode.window.showQuickPick(["Yes", "No"], { 
+                            placeHolder: "Template '" + filename + "' already exists.  Do you wish to overwrite?" 
                         }).then(
                             async (choice) => {
-                                   if (choice === "Yes") {
+                                if (choice === "Yes") {
                                     // delete original and copy new template folder
                                     await fsutils.deleteDir(templateDir);
-                                    fsutils.copyDir(workspace, templateDir);
+                                    await fsutils.copyDir(workspace, templateDir);
                                 }
+                            },
+                            (reason) => {
+                                return Promise.reject(reason);
                             });
                 } else {
                     // copy current workspace to new template folder
-                    fsutils.copyDir(workspace, templateDir);
+                    await fsutils.copyDir(workspace, templateDir);
                 }
+
+                return template;
             }
         );
     }
@@ -262,8 +293,7 @@ export default class TemplateManager {
      *                           placeholders.  The first capture group is used
      *                           as the key.
      * @param placeholders dictionary of placeholder key-value pairs
-     * @returns {Promise<string|Buffer>} the (potentially) modified data, with 
-     *                                   the same type as the input data 
+     * @returns the (potentially) modified data, with the same type as the input data 
      */
     private async resolvePlaceholders(data : string | Buffer, placeholderRegExp : string,
         placeholders : {[placeholder: string] : string | undefined} ) : Promise<string | Buffer> {
@@ -361,7 +391,7 @@ export default class TemplateManager {
 
         if (!fs.existsSync(templateDir) || !fs.lstatSync(templateDir).isDirectory()) {
             vscode.window.showErrorMessage("Template '" + template + "' does not exist.");
-            return;
+            return undefined;
         }
 
         // update placeholder configuration
@@ -472,19 +502,16 @@ export default class TemplateManager {
                 fsutils.mkdirsSync(parent);
 
                 // write file contents to destination
-                fs.writeFile(dest, fileContents, 
-                    function (err) {
-                        if (err) {
-                            vscode.window.showErrorMessage(err.message);
-                        }
-                    }
-                );
+                fs.writeFileSync(dest, fileContents);
+
             }
             return true;
         };  // copy function
         
         // actually copy the file recursively
-        await this.recursiveApplyInDir(templateDir, workspace, copyFunc);        
+        await this.recursiveApplyInDir(templateDir, workspace, copyFunc);    
+        
+        return template;
     }
 
     /**
@@ -493,7 +520,7 @@ export default class TemplateManager {
     * @param src source file or folder
     * @param dest destination file or folder
     * @param func function to apply between src and dest
-    * @return {boolean} if recursion should continue
+    * @return if recursion should continue
     * @throws Error if function fails
     */
    private async recursiveApplyInDir(src : string, dest : string, 
