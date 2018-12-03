@@ -28,8 +28,6 @@ export async function run(templateManager: TemplateManager, args: any) {
         (template : string | undefined) => {
             if (template) {
                 vscode.window.showInformationMessage("Created project from template '" + template + "'");
-            } else {
-                vscode.window.showInformationMessage("Aborted copying of template '" + template + "'");
             }
         },
         (reason: any) => {

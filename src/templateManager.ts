@@ -247,9 +247,9 @@ export default class TemplateManager {
             
             async filename => {
     
-                // empty filename defaults to project name
+                // empty filename exits
                 if (!filename) {
-                    filename = projectName;
+                    return undefined;
                 }
 
                 // determine template dir

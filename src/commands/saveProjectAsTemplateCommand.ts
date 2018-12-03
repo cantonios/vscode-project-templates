@@ -24,8 +24,10 @@ export async function run(templateManager: TemplateManager, args: any) {
 	templateManager.updateConfiguration(vscode.workspace.getConfiguration('projectTemplates'));
 
     templateManager.saveAsTemplate(workspace).then(
-		(template : string) => { 
-			vscode.window.showInformationMessage("Saved template '" + template + "'");
+		(template : string | undefined) => { 
+			if (template) {
+				vscode.window.showInformationMessage("Saved template '" + template + "'");
+			}
 		},
 		(reason : any) => { 
 			vscode.window.showErrorMessage("Failed to save template: " + reason);
