@@ -16,7 +16,7 @@ Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file
 
 ## Install
 
-In Visual Studio code, Press F1 to open the command menu and type ```ext install vscode-project-templates```.
+In Visual Studio code, Press F1 to open the command menu and type ```ext install project-templates```.
 
 ## Extension Settings
 
