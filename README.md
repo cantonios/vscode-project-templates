@@ -11,13 +11,12 @@ Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file
 * Save the current project as a template directory
 * Use customizable placeholders for easy interactive configuration
 
-<!-- ## Screenshots
 
-![preview](images/preview01.jpg) -->
+![demo](images/demo.gif)
 
 ## Install
 
-In Visual Studio code, Press F1 to open the command menu and type ```ext install project-templates```.
+In Visual Studio code, Press F1 to open the command menu and type ```ext install vscode-project-templates```.
 
 ## Extension Settings
 
@@ -44,6 +43,8 @@ See [CHANGELOG](./CHANGELOG.md) for release notes.
 ## Usage
 
 Extension commands can be executed from the Command Palette or from the context menu when selecting a folder.
+
+![commands](images/commands.png)  ![menu](images/menu.png)  
 
 ### Creating a Project from a Template
 
@@ -78,8 +79,8 @@ When a file is created from a template containing placeholders, the user is prom
 * A set of common placeholder key-values pairs can be specified in a dictionary:
   ```
   "projectTemplates.placeholders": {
-	"author" : "John Smith",
-	"company": "Wonderful Widgets Inc."
+	   "author" : "John Smith",
+	   "company": "Wonderful Widgets Inc."
   }
   ```
   These placeholders will be replaced without prompting.
