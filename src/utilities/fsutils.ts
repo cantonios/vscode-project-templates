@@ -83,7 +83,7 @@ export async function deleteDir(dir : string) {
 
 		// wait for all promises
 		await Promise.all(promises).then(
-			(value: boolean[] )  =>{ 
+			(value: boolean[] )  => { 
 				return value; 
 			},
 			(reason: any) => {

@@ -25,9 +25,9 @@ This extension contributes the following settings:
 
 ```ts
 {
-  "projectTemplates.templatesDirectory": "",    // default directory containing project templates
-  "projectTemplates.usePlaceholders": true,     // activate placeholder substitution
-  "projectTemplates.placeholders": {  },        // dictionary of default placeholder key-value pairs
+  "projectTemplates.templatesDirectory": "",          // default directory containing project templates
+  "projectTemplates.usePlaceholders": true,           // activate placeholder substitution
+  "projectTemplates.placeholders": {  },              // dictionary of default placeholder key-value pairs
   "projectTemplates.placeholderRegExp": "#{(\\w+?)}"  // regular expression to use for detecting placeholders
 }
 ```

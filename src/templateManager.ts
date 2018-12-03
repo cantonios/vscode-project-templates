@@ -418,6 +418,7 @@ export default class TemplateManager {
 				if (!fs.existsSync(dest)) {
 					fs.mkdirSync(dest);
 				} else if (!fs.lstatSync(dest).isDirectory()) {
+                    // fail if file exists
 					throw new Error("Failed to create directory '" + dest + "': file with same name exists.");
 				}
             } else {
