@@ -12,7 +12,7 @@ Inspired by [this File Templates Extension](https://github.com/brpaz/vscode-file
 * Use customizable placeholders for easy interactive configuration
 
 
-![demo](images/demo.gif)
+![demo](https://raw.githubusercontent.com/cantonios/vscode-project-templates/master/images/demofast.gif)
 
 ## Install
 
@@ -37,15 +37,15 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-See [CHANGELOG](./CHANGELOG.md) for release notes.
+See [CHANGELOG](https://github.com/cantonios/vscode-project-templates/tree/master/CHANGELOG.md) for release notes.
 
 
 ## Usage
 
 Extension commands can be executed from the Command Palette or from the context menu when selecting a folder.
 
-<img src="images/commands.png" width="900" />
-<img src="images/menu.png" width="500" />  
+<img src="https://raw.githubusercontent.com/cantonios/vscode-project-templates/master/images/commands.png" width="450" />
+<img src="https://raw.githubusercontent.com/cantonios/vscode-project-templates/master/images/menu.png" width="250" />  
 
 ### Creating a Project from a Template
 
