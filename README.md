@@ -44,7 +44,8 @@ See [CHANGELOG](./CHANGELOG.md) for release notes.
 
 Extension commands can be executed from the Command Palette or from the context menu when selecting a folder.
 
-![commands](images/commands.png)  ![menu](images/menu.png)  
+![commands](images/commands.png =900x200)  
+![menu](images/menu.png =500x600)  
 
 ### Creating a Project from a Template
 
