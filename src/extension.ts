@@ -5,7 +5,7 @@
 import * as vscode from 'vscode';
 
 // import manager
-import TemplateManager from './templateManager';
+import ProjectTemplatesPlugin from './projectTemplatesPlugin';
 
 // import commands
 import OpenTemplatesFolderCommand = require('./commands/openTemplatesFolderCommand');
@@ -21,29 +21,29 @@ import CreateProjectFromTemplateCommand = require('./commands/createProjectFromT
 export function activate(context: vscode.ExtensionContext) {
 
     // create manager and initialize template folder
-    let templateManager = new TemplateManager(vscode.workspace.getConfiguration('projectTemplates'));
-    templateManager.createTemplatesDirIfNotExists();
+    let projectTemplatesPlugin = new ProjectTemplatesPlugin(context, vscode.workspace.getConfiguration('projectTemplates'));
+    projectTemplatesPlugin.createTemplatesDirIfNotExists();
 
     // register commands
 
     // open templates folder
     let openTemplatesFolder = vscode.commands.registerCommand('extension.openTemplatesFolder', 
-        OpenTemplatesFolderCommand.run.bind(undefined, templateManager));
+        OpenTemplatesFolderCommand.run.bind(undefined, projectTemplatesPlugin));
     context.subscriptions.push(openTemplatesFolder);
     
     // save as template
     let saveProjectAsTemplate = vscode.commands.registerCommand('extension.saveProjectAsTemplate', 
-        SaveProjectAsTemplateCommand.run.bind(undefined, templateManager));
+        SaveProjectAsTemplateCommand.run.bind(undefined, projectTemplatesPlugin));
     context.subscriptions.push(saveProjectAsTemplate);
 
     // delete template
     let deleteTemplate = vscode.commands.registerCommand('extension.deleteTemplate', 
-        DeleteTemplateCommand.run.bind(undefined, templateManager));
+        DeleteTemplateCommand.run.bind(undefined, projectTemplatesPlugin));
     context.subscriptions.push(deleteTemplate);
 
     // create project from template
     let createProjectFromTemplate = vscode.commands.registerCommand('extension.createProjectFromTemplate',
-        CreateProjectFromTemplateCommand.run.bind(undefined, templateManager));
+        CreateProjectFromTemplateCommand.run.bind(undefined, projectTemplatesPlugin));
     context.subscriptions.push(createProjectFromTemplate);
 
 }

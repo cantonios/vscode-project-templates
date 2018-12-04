@@ -15,15 +15,17 @@ import fmutils = require("./utilities/fmutils");
  * @export
  * @class TemplateManager
  */
-export default class TemplateManager {
+export default class ProjectTemplatesPlugin {
 
     /**
      * local copy of workspace configuration to maintain consistency between calls
      */
     config: WorkspaceConfiguration;
+    econtext: vscode.ExtensionContext;
 
-    constructor(config: WorkspaceConfiguration) {
+    constructor(econtext : vscode.ExtensionContext, config: WorkspaceConfiguration) {
         this.config = config;
+        this.econtext = econtext;
     }
 
     /**
@@ -101,27 +103,38 @@ export default class TemplateManager {
     }
 
     /**
-     * Returns the default templates location based on the user OS.
-     * @returns default OS-specific template directory
+     * Returns the default templates location, which is based on the global storage-path directory.
+     * @returns default template directory
      */
     private getDefaultTemplatesDir(): string {
-        let userDataDir : string;
 
-        switch (process.platform) {
-            case 'linux':
-                userDataDir = path.join(os.homedir(), '.config');
-                break;
-            case 'darwin':
-                userDataDir = path.join(os.homedir(), 'Library', 'Application Support');
-                break;
-            case 'win32':
-                userDataDir = process.env.APPDATA!;
-                break;
-            default:
-                throw Error("Unrecognized operating system: " + process.platform);
+        // extract from workspace-specific storage path
+        let userDataDir = this.econtext.storagePath;
+
+        if (!userDataDir) {
+            // no workspace, default to OS-specific hard-coded path
+            switch (process.platform) {
+                case 'linux':
+                    userDataDir = path.join(os.homedir(), '.config');
+                    break;
+                case 'darwin':
+                    userDataDir = path.join(os.homedir(), 'Library', 'Application Support');
+                    break;
+                case 'win32':
+                    userDataDir = process.env.APPDATA!;
+                    break;
+                default:
+                    throw Error("Unrecognized operating system: " + process.platform);
+            }
+            userDataDir = path.join(userDataDir, 'Code', 'User', 'ProjectTemplates');
+        } else {
+            // get parent of parent of parent to remove workspaceStorage/<UID>/<extension>
+            let ggparent = path.dirname(path.dirname(path.dirname(userDataDir)));
+            // add subfolder 'ProjectTemplates'
+            userDataDir = path.join(ggparent, 'ProjectTemplates');
         }
 
-        return path.join(userDataDir, 'Code', 'User', 'ProjectTemplates');
+        return userDataDir;
     }
 
     /**

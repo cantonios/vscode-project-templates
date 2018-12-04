@@ -3,7 +3,7 @@
 import vscode = require("vscode");
 
 import fmutils = require("../utilities/fmutils");
-import TemplatesManager from "../templateManager";
+import TemplatesManager from "../projectTemplatesPlugin";
 
 /**
  * Main command to create a file from a template.
