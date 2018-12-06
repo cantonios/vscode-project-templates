@@ -88,27 +88,18 @@ When a file is created from a template containing placeholders, the user is prom
 
 ## Templates Location
 
-By default, this extension expects the project templates to be placed at the following location, depending of your OS:
-
-Linux:
-
+By default, this extension expects the project templates to be placed within the user's data directory for VSCode, which is OS-specific.  For the non-portable version of VSCode, this is typically
 ```
-$HOME/.config/Code/User/ProjectTemplates
+$HOME/.config/Code/User/ProjectTemplates                       # Linux
+$HOME/Library/Application Support/Code/User/ProjectTemplates   # macOS
+%APPDATA%\Code\User\ProjectTemplates                           # Windows
 ```
-
-Mac:
-
+For the portable version of vscode, or if a `--user-data-dir` is specified at the command-line, the default template location is
 ```
-$HOME/Library/Application Support/Code/User/ProjectTemplates
+$USER_DATA_DIR/User/ProjectTemplates
 ```
 
-Windows:
-
-```
-C:\Users\User\AppData\Roaming\Code\User\ProjectTemplates
-```
-
-However, you can change the default location by adding the following to your user or workspace settings:
+You can change the templates location by adding the following to your user or workspace settings:
 
 ```
 "projectTemplates.templatesDirectory": "path/to/my/templates"

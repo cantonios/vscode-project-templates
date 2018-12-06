@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
     // create manager and initialize template folder
     let projectTemplatesPlugin = new ProjectTemplatesPlugin(context, vscode.workspace.getConfiguration('projectTemplates'));
     projectTemplatesPlugin.createTemplatesDirIfNotExists();
-
+   
     // register commands
 
     // open templates folder

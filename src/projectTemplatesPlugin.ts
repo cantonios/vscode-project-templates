@@ -113,20 +113,25 @@ export default class ProjectTemplatesPlugin {
 
         if (!userDataDir) {
             // no workspace, default to OS-specific hard-coded path
-            switch (process.platform) {
-                case 'linux':
-                    userDataDir = path.join(os.homedir(), '.config');
-                    break;
-                case 'darwin':
-                    userDataDir = path.join(os.homedir(), 'Library', 'Application Support');
-                    break;
-                case 'win32':
-                    userDataDir = process.env.APPDATA!;
-                    break;
-                default:
-                    throw Error("Unrecognized operating system: " + process.platform);
-            }
-            userDataDir = path.join(userDataDir, 'Code', 'User', 'ProjectTemplates');
+            // switch (process.platform) {
+            //     case 'linux':
+            //         userDataDir = path.join(os.homedir(), '.config');
+            //         break;
+            //     case 'darwin':
+            //         userDataDir = path.join(os.homedir(), 'Library', 'Application Support');
+            //         break;
+            //     case 'win32':
+            //         userDataDir = process.env.APPDATA!;
+            //         break;
+            //     default:
+            //         throw Error("Unrecognized operating system: " + process.platform);
+            // }
+            // userDataDir = path.join(userDataDir, 'Code', 'User', 'ProjectTemplates');
+
+            // extract from log path
+            userDataDir = this.econtext.logPath;
+            let gggparent = path.dirname(path.dirname(path.dirname(path.dirname(userDataDir))));
+            userDataDir = path.join(gggparent, 'User', 'ProjectTemplates');
         } else {
             // get parent of parent of parent to remove workspaceStorage/<UID>/<extension>
             let ggparent = path.dirname(path.dirname(path.dirname(userDataDir)));
@@ -144,7 +149,7 @@ export default class ProjectTemplatesPlugin {
     public createTemplatesDirIfNotExists() {
 		let templatesDir = this.getTemplatesDir();
 		
-		if (!fs.existsSync(templatesDir)) {
+		if (templatesDir && !fs.existsSync(templatesDir)) {
 			try {
 				fs.mkdirSync(templatesDir, 0o775);
 			} catch (err) {
