@@ -5,7 +5,6 @@ import * as vscode from 'vscode';
 
 import fs = require('fs');
 import path = require('path');
-import os = require('os');
 
 import fsutils = require("./utilities/fsutils");
 import fmutils = require("./utilities/fmutils");
