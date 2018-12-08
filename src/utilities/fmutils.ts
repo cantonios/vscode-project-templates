@@ -8,21 +8,22 @@ import child_process = require('child_process');
  * @param {string} folder folder to open
  */
 export function openFolderInExplorer(folder : string) {
-    let command = null;
+    let command = "";
     switch (process.platform) {
         case 'linux':
-            command = 'xdg-open ' + folder;
+            command = 'xdg-open';
             break;
         case 'darwin':
-            command = 'open ' + folder;
+            command = 'open';
             break;
         case 'win32':
-            command = 'explorer.exe ' + folder;
+            command = 'start';
             break;
     }
 
 	// executute open folder command
     if (command !== null) {
-        child_process.exec(command);
+        child_process.spawn(command, [folder],
+            {stdio: [process.stdin, process.stdout, process.stderr]});
     }
 }
