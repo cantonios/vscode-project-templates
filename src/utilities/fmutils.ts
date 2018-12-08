@@ -17,13 +17,12 @@ export function openFolderInExplorer(folder : string) {
             command = 'open';
             break;
         case 'win32':
-            command = 'start';
+            command = 'explorer.exe';
             break;
     }
 
 	// executute open folder command
-    if (command !== null) {
-        child_process.spawn(command, [folder],
-            {stdio: [process.stdin, process.stdout, process.stderr]});
+    if (command) {
+        child_process.spawn(command, [folder]);
     }
 }
