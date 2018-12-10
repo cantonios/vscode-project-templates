@@ -104,6 +104,7 @@ You can change the templates location by adding the following to your user or wo
 ```
 "projectTemplates.templatesDirectory": "path/to/my/templates"
 ```
+This path supports VSCode's predefined variables, such as `${env:HOME}`.
 
 ### Samples
 
