@@ -108,7 +108,7 @@ export async function deleteDir(dir : string) {
  * Recursively make directories
  * @param path destination path
  */
-export function mkdirsSync(dest : string) : boolean {
+export function mkdirsSync(dest : string, mode : string | number | null | undefined = undefined) : boolean {
 
 	// check if exists
 	if (fs.existsSync(dest)) {
@@ -126,11 +126,11 @@ export function mkdirsSync(dest : string) : boolean {
 
 	// ensure existence of parent
 	let parent = path.dirname(dest);
-	if (!mkdirsSync(parent)) {
+	if (!mkdirsSync(parent, mode)) {
 		return false;
 	}
 
 	// make current directory
-	fs.mkdirSync(dest);
+	fs.mkdirSync(dest, mode);
 	return true;
 }

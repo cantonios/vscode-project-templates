@@ -158,9 +158,8 @@ export default class VariableResolver {
 
     public async resolve(value : string) : Promise<string> {
 
-        
-        let variableName: string;
-        let resolvedValue: string;
+        let variableName: string = "";
+        let resolvedValue: string = "";
 
         // command maps
         let commandValueMapping = await this.resolveCommands(value);
@@ -334,7 +333,7 @@ export default class VariableResolver {
 				}
 			}
         });
-        
+
 		return replaced;
 
     }

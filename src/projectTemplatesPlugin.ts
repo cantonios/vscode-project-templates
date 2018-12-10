@@ -94,18 +94,20 @@ export default class ProjectTemplatesPlugin {
      * Otherwise it will look for the path defined in the extension configuration.
      * @return the templates directory
      */
-    public getTemplatesDir(): Promise<string> {
+    public async getTemplatesDir(): Promise<string> {
 
         let dir = this.config.get('templatesDirectory', this.getDefaultTemplatesDir());
         if (!dir) {
-            return Promise.resolve(this.getDefaultTemplatesDir());
+            dir = path.normalize(this.getDefaultTemplatesDir());
+            return Promise.resolve(dir);
         }
 
         // resolve path with variables
         const resolver = new VariableResolver();
-        let rdir = resolver.resolve(dir);
+        let rdir = await resolver.resolve(dir);
+        dir = path.normalize(rdir);
 
-        return rdir;
+        return Promise.resolve(dir);
     }
 
     /**
@@ -157,7 +159,8 @@ export default class ProjectTemplatesPlugin {
 		
 		if (templatesDir && !fs.existsSync(templatesDir)) {
 			try {
-				fs.mkdirSync(templatesDir, 0o775);
+                fsutils.mkdirsSync(templatesDir, 0o775);
+				fs.mkdirSync(templatesDir);
 			} catch (err) {
 				if (err.code !== 'EEXIST') {
 					throw err;
