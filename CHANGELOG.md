@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Resolve predefined variables in templates folder path (https://code.visualstudio.com/docs/editor/variables-reference)
+
 ## [1.1.1] - 2018-12-06
 - Fixed bug of opening templates folder path that contains spaces
 

@@ -8,6 +8,7 @@ import path = require('path');
 
 import fsutils = require("./utilities/fsutils");
 import fmutils = require("./utilities/fmutils");
+import VariableResolver from './utilities/variableResolver';
 
 /**
  * Main class to handle the logic of the Project Templates
@@ -67,11 +68,11 @@ export default class ProjectTemplatesPlugin {
      * Returns a list of available project templates by reading the Templates Directory.
      * @returns list of templates found
      */
-    public getTemplates(): string[] {
+    public async getTemplates(): Promise<string[]> {
 
-        this.createTemplatesDirIfNotExists();
+        await this.createTemplatesDirIfNotExists();
 
-		let templateDir: string = this.getTemplatesDir();
+		let templateDir: string = await this.getTemplatesDir();
         
         let templates: string[] = fs.readdirSync(templateDir).map( function (item) {
 			// ignore hidden folders
@@ -93,12 +94,18 @@ export default class ProjectTemplatesPlugin {
      * Otherwise it will look for the path defined in the extension configuration.
      * @return the templates directory
      */
-    public getTemplatesDir(): string {
+    public getTemplatesDir(): Promise<string> {
+
         let dir = this.config.get('templatesDirectory', this.getDefaultTemplatesDir());
         if (!dir) {
-            dir = this.getDefaultTemplatesDir();
+            return Promise.resolve(this.getDefaultTemplatesDir());
         }
-        return dir;
+
+        // resolve path with variables
+        const resolver = new VariableResolver();
+        let rdir = resolver.resolve(dir);
+
+        return rdir;
     }
 
     /**
@@ -145,8 +152,8 @@ export default class ProjectTemplatesPlugin {
      * Creates the templates directory if it does not exists
 	 * @throws Error
      */
-    public createTemplatesDirIfNotExists() {
-		let templatesDir = this.getTemplatesDir();
+    public async createTemplatesDirIfNotExists() {
+		let templatesDir = await this.getTemplatesDir();
 		
 		if (templatesDir && !fs.existsSync(templatesDir)) {
 			try {
@@ -169,8 +176,8 @@ export default class ProjectTemplatesPlugin {
     public async chooseTemplate() : Promise<string | undefined> {
         
         // read templates
-        let templates = this.getTemplates();
-        let templateRoot = this.getTemplatesDir();
+        let templates = await this.getTemplates();
+        let templateRoot = await this.getTemplatesDir();
 
         if (templates.length === 0) {
             let optionGoToTemplates = <vscode.MessageItem> {
@@ -205,7 +212,7 @@ export default class ProjectTemplatesPlugin {
             return false;
         }
             
-        let templateRoot = this.getTemplatesDir();
+        let templateRoot = await this.getTemplatesDir();
         let templateDir : string = path.join(templateRoot, template);
 
         if (fs.existsSync(templateDir) && fs.lstatSync(templateDir).isDirectory()) {
@@ -249,7 +256,7 @@ export default class ProjectTemplatesPlugin {
     public async saveAsTemplate(workspace : string) {
 
         // ensure templates directory exists
-        this.createTemplatesDirIfNotExists();
+        await this.createTemplatesDirIfNotExists();
 
         let projectName = path.basename(workspace);
 
@@ -271,7 +278,7 @@ export default class ProjectTemplatesPlugin {
 
                 // determine template dir
                 let template = path.basename(filename);
-                let templateDir = path.join(this.getTemplatesDir(), template);
+                let templateDir = path.join(await this.getTemplatesDir(), template);
                 console.log("Destination folder: " + templateDir);
     
                 // check if exists
@@ -394,7 +401,7 @@ export default class ProjectTemplatesPlugin {
      */
     public async createFromTemplate(workspace : string) {
 
-        this.createTemplatesDirIfNotExists();
+        await this.createTemplatesDirIfNotExists();
 
         // choose a template
         let template = await this.chooseTemplate();
@@ -403,7 +410,7 @@ export default class ProjectTemplatesPlugin {
         }
 
         // get template folder
-        let templateRoot = this.getTemplatesDir();
+        let templateRoot = await this.getTemplatesDir();
         let templateDir = path.join(templateRoot, template);
 
         if (!fs.existsSync(templateDir) || !fs.lstatSync(templateDir).isDirectory()) {

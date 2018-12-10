@@ -13,16 +13,16 @@ import TemplatesManager from "../projectTemplatesPlugin";
  * @param {*} args
  * @returns
  */
-export function run(templateManager: TemplatesManager, args: any) {
+export async function run(templateManager: TemplatesManager, args: any) {
 
 	// load latest configuration
 	templateManager.updateConfiguration(vscode.workspace.getConfiguration('projectTemplates'));
 
 	// create template directory
-	templateManager.createTemplatesDirIfNotExists();
+	await templateManager.createTemplatesDirIfNotExists();
 
 	// open template directory
-	fmutils.openFolderInExplorer(templateManager.getTemplatesDir());
+	fmutils.openFolderInExplorer(await templateManager.getTemplatesDir());
 
     
 }
