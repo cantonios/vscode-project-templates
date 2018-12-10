@@ -12,7 +12,7 @@
 
 'use strict';
 
-import {WorkspaceFolder, Uri} from 'vscode';
+import {Uri} from 'vscode';
 import * as vscode from 'vscode';
 import path = require("path");
 
@@ -158,16 +158,11 @@ export default class VariableResolver {
 
     public async resolve(value : string) : Promise<string> {
 
-        let variableName: string = "";
-        let resolvedValue: string = "";
-
         // command maps
         let commandValueMapping = await this.resolveCommands(value);
         
 		const replaced = value.replace(VariableResolver.VARIABLE_REGEXP, (match: string, variable: string) => {
-
-            variableName = variable;
-            
+ 
             let argument: string = "";
             let folderUri: Uri | undefined = undefined;
             let filePath: string = "";
@@ -191,10 +186,10 @@ export default class VariableResolver {
                         
 						const val = this._envVariables[argument];
 						if (val) {
-							return resolvedValue = val;
+							return val;
 						}
 						// For `env` we should do the same as a normal shell does - evaluates missing envs to an empty string #46436
-						return resolvedValue = "";
+						return "";
                     }
                     
                     throw new Error("missingEnvVarName: '" + match + "' cannot be resolved because no environment variable name is given.");
@@ -209,13 +204,13 @@ export default class VariableResolver {
 						if (typeof val === 'object') {
 							throw new Error("configNoString: '" + match + "' cannot be resolved because '" + argument + "' is a structured value.");
 						}
-						return resolvedValue = val;
+						return val;
 					}
 					throw new Error("missingConfigName '" + match + "' cannot be resolved because no settings name is given.");
 
 				case 'command': {
                     if (commandValueMapping) {
-                        return resolvedValue = this.resolveFromMap(match, argument, commandValueMapping, 'command');
+                        return this.resolveFromMap(match, argument, commandValueMapping, 'command');
                     } else {
                         throw new Error("commandNoMapping: '" + match + "' cannot be resolved because command values were not computed");
                     }
@@ -276,19 +271,19 @@ export default class VariableResolver {
 					switch (variable) {
 						case 'workspaceRoot':
 						case 'workspaceFolder':
-							return resolvedValue = folderUri ? this.normalizeDriveLetter(folderUri.fsPath) : "";
+							return folderUri ? this.normalizeDriveLetter(folderUri.fsPath) : "";
 
 						case 'cwd':
-							return resolvedValue = (folderUri ? this.normalizeDriveLetter(folderUri.fsPath) : process.cwd());
+							return (folderUri ? this.normalizeDriveLetter(folderUri.fsPath) : process.cwd());
 
 						case 'workspaceRootFolderName':
 						case 'workspaceFolderBasename':
-							return resolvedValue = folderUri ? path.basename(folderUri.fsPath) : "";
+							return folderUri ? path.basename(folderUri.fsPath) : "";
 
 						case 'lineNumber': {
                             const activeEditor = vscode.window.activeTextEditor;
                             if (activeEditor) {
-                                return resolvedValue = activeEditor.selection.active.line.toString();
+                                return activeEditor.selection.active.line.toString();
                             }
                             throw new Error("canNotResolveLineNumber: '" + match + "' cannot be resolved. Make sure to have a line selected in the active editor.");
                         }
@@ -297,38 +292,38 @@ export default class VariableResolver {
                             if (activeEditor) {
                                 const selectedText = activeEditor.document.getText(activeEditor.selection);
                                 if (selectedText) {
-                                    return resolvedValue = selectedText;
+                                    return selectedText;
                                 }
                             }
 							throw new Error("canNotResolveSelectedText: '" + match + "' can not be resolved. Make sure to have some text selected in the active editor.");
                         }
 						case 'file':
-							return resolvedValue = filePath;
+							return filePath;
 
 						case 'relativeFile':
 							if (folderUri) {
-								return resolvedValue = path.normalize(path.relative(folderUri.fsPath, filePath));
+								return path.normalize(path.relative(folderUri.fsPath, filePath));
 							}
-							return resolvedValue = filePath;
+							return filePath;
 
 						case 'fileDirname':
-							return resolvedValue = path.dirname(filePath);
+							return path.dirname(filePath);
 
 						case 'fileExtname':
-							return resolvedValue = path.extname(filePath);
+							return path.extname(filePath);
 
 						case 'fileBasename':
-							return resolvedValue = path.basename(filePath);
+							return path.basename(filePath);
 
 						case 'fileBasenameNoExtension':
 							const basename = path.basename(filePath);
-							return resolvedValue = (basename.slice(0, basename.length - path.extname(basename).length));
+							return (basename.slice(0, basename.length - path.extname(basename).length));
 
 						case 'execPath': {
 							throw new Error("canNotResolveExecPath: '" + match + "' not implemented.");
                         }
 						default:
-							return resolvedValue = match;
+							return match;
 					}
 				}
 			}
