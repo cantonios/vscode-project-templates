@@ -27,7 +27,10 @@ This extension contributes the following settings:
   "projectTemplates.templatesDirectory": "",          // default directory containing project templates
   "projectTemplates.usePlaceholders": true,           // activate placeholder substitution
   "projectTemplates.placeholders": {  },              // dictionary of default placeholder key-value pairs
-  "projectTemplates.placeholderRegExp": "#{(\\w+?)}"  // regular expression to use for detecting placeholders
+  "projectTemplates.placeholderRegExp": "#{(\\w+?)}", // regular expression to use for detecting placeholders
+  "projectTemplates.gitDirectory": ""                 // default directory containing git project templates
+  "projectTemplates.gitRepositories": []              // array of all git repository urls
+  "projectTemplates.gitPrefix": "Git:"                // prefix for git repository names in picker
 }
 ```
 
