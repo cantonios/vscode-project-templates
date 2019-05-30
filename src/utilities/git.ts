@@ -10,8 +10,7 @@ export async function cloneOrPull(repo : string, dest : string) {
 
       let process;
       if (!fs.existsSync(repoDest) || !fs.lstatSync(repoDest).isDirectory()) {
-        const url = repo.replace(/http(s)?/, 'git');
-        process = spawn('git', ['clone', url], { cwd: dest });
+        process = spawn('git', ['clone', repo], { cwd: dest });
       } else {
         process = spawn('git', ['pull', '-f'], { cwd: repoDest });
       }
@@ -39,6 +38,5 @@ export async function cloneOrPull(repo : string, dest : string) {
 }
 
 export function getRepositoryName(url: string): string {
-  console.log(url, url.lastIndexOf('/'), url.lastIndexOf('.'));
   return url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
 }
