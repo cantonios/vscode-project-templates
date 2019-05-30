@@ -57,6 +57,27 @@
                     ],
                     "default": {},
                     "description": "List of placeholders, in key-value string pairs."
+                },
+                "projectTemplates.gitDirectory": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Directory to read/store project template folders that are synced with git"
+                },
+                "projectTemplates.gitRepositories": {
+                    "type": [
+                        "array"
+                    ],
+                    "default": [""],
+                    "description": "List of git repository urls"
+                },
+                "projectTemplates.gitPrefix": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "Git:",
+                    "description": "Prefix for git repository names in picker list"
                 }
             }
         },

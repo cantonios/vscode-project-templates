@@ -17,7 +17,7 @@ export async function run(templateManager: ProjectTemplatesPlugin, args: any) {
     templateManager.updateConfiguration(vscode.workspace.getConfiguration('projectTemplates'));
 
     // choose a template then delete
-    templateManager.chooseTemplate().then( 
+    templateManager.chooseTemplate(false).then( 
         template => {
             // no template chosen, simply exit
             if (!template) {

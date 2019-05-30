@@ -9,6 +9,7 @@ import path = require('path');
 import fsutils = require("./utilities/fsutils");
 import fmutils = require("./utilities/fmutils");
 import VariableResolver from './utilities/variableResolver';
+import { cloneOrPull } from './utilities/git';
 
 /**
  * Main class to handle the logic of the Project Templates
@@ -111,6 +112,29 @@ export default class ProjectTemplatesPlugin {
     }
 
     /**
+     * Returns the git directory location.
+     * If no user configuration is found, the extension will look for
+     * templates in USER_DATA_DIR/Code/ProjectGitTemplates.
+     * Otherwise it will look for the path defined in the extension configuration.
+     * @return the templates git directory
+     */
+    public async getGitDir(): Promise<string> {
+
+        let dir = this.config.get('gitDirectory', this.getDefaultGitDir());
+        if (!dir) {
+            dir = path.normalize(this.getDefaultGitDir());
+            return Promise.resolve(dir);
+        }
+
+        // resolve path with variables
+        const resolver = new VariableResolver();
+        let rdir = await resolver.resolve(dir);
+        dir = path.normalize(rdir);
+
+        return Promise.resolve(dir);
+    }
+
+    /**
      * Returns the default templates location, which is based on the global storage-path directory.
      * @returns default template directory
      */
@@ -151,6 +175,29 @@ export default class ProjectTemplatesPlugin {
     }
 
     /**
+     * Returns the default git template location, which is based on the global storage-path directory.
+     * @returns default template git directory
+     */
+    private getDefaultGitDir(): string {
+
+        // extract from workspace-specific storage path
+        let userDataDir = this.econtext.storagePath;
+
+        if (!userDataDir) {
+            userDataDir = this.econtext.logPath;
+            let gggparent = path.dirname(path.dirname(path.dirname(path.dirname(userDataDir))));
+            userDataDir = path.join(gggparent, 'User', 'ProjectGitTemplates');
+        } else {
+            // get parent of parent of parent to remove workspaceStorage/<UID>/<extension>
+            let ggparent = path.dirname(path.dirname(path.dirname(userDataDir)));
+            // add subfolder 'ProjectGitTemplates'
+            userDataDir = path.join(ggparent, 'ProjectGitTemplates');
+        }
+
+        return userDataDir;
+    }
+
+    /**
      * Creates the templates directory if it does not exists
 	 * @throws Error
      */
@@ -170,17 +217,43 @@ export default class ProjectTemplatesPlugin {
     }
 
     /**
+     * Creates the git template directory if it does not exists
+	 * @throws Error
+     */
+    public async createGitDirIfNotExists() {
+		let templatesDir = await this.getGitDir();
+		
+		if (templatesDir && !fs.existsSync(templatesDir)) {
+			try {
+                fsutils.mkdirsSync(templatesDir, 0o775);
+				fs.mkdirSync(templatesDir);
+			} catch (err) {
+				if (err.code !== 'EEXIST') {
+					throw err;
+				}
+			}
+		}
+    }
+
+    /**
      * Chooses a template from the set of templates available in the root 
      * template directory.  If none exists, presents option to open root
      * template folder.
      * 
+     * @param includeGit
+     * 
      * @returns chosen template name, or undefined if none selected
      */
-    public async chooseTemplate() : Promise<string | undefined> {
+    public async chooseTemplate(includeGit: boolean) : Promise<string | undefined> {
         
         // read templates
         let templates = await this.getTemplates();
         let templateRoot = await this.getTemplatesDir();
+
+        if (includeGit) {
+            const repos = await this.getRepositories();
+            templates = templates.concat(repos);
+        }
 
         if (templates.length === 0) {
             let optionGoToTemplates = <vscode.MessageItem> {
@@ -407,14 +480,33 @@ export default class ProjectTemplatesPlugin {
         await this.createTemplatesDirIfNotExists();
 
         // choose a template
-        let template = await this.chooseTemplate();
+        let template = await this.chooseTemplate(true);
         if (!template) {
             return;
         }
 
         // get template folder
-        let templateRoot = await this.getTemplatesDir();
-        let templateDir = path.join(templateRoot, template);
+        let templateDir: string;
+        
+        let gitPrefix = this.config.get('gitPrefix', 'Git:');
+        if (template.startsWith(gitPrefix)) {
+            let name = template.replace(`${gitPrefix} `, '');
+            let repo = this.config.get('gitRepositories', []).find((item: string) => item.endsWith(name));
+
+            if (!repo) {
+                vscode.window.showErrorMessage("Template '" + template + "' was not found.");
+                return undefined;
+            }
+
+            let templateRoot = await this.getGitDir();
+
+            await cloneOrPull(repo, templateRoot);
+
+            templateDir = path.join(templateRoot, name);
+        } else {
+            let templateRoot = await this.getTemplatesDir();
+            templateDir = path.join(templateRoot, template);
+        }
 
         if (!fs.existsSync(templateDir) || !fs.lstatSync(templateDir).isDirectory()) {
             vscode.window.showErrorMessage("Template '" + template + "' does not exist.");
@@ -438,6 +530,11 @@ export default class ProjectTemplatesPlugin {
             // maybe replace placeholders in filename
             if (usePlaceholders) {
                 dest = await this.resolvePlaceholders(dest, placeholderRegExp, placeholders) as string;
+            }
+
+            // if we copy from a git repo, we need to skip the .git directory
+            if (/\/.git($|\/)/ig.test(src)) {
+                return true;
             }
 
 			if (fs.lstatSync(src).isDirectory()) {
