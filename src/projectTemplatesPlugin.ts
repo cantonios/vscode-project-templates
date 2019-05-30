@@ -9,7 +9,7 @@ import path = require('path');
 import fsutils = require("./utilities/fsutils");
 import fmutils = require("./utilities/fmutils");
 import VariableResolver from './utilities/variableResolver';
-import { cloneOrPull } from './utilities/git';
+import { cloneOrPull, getRepositoryName } from './utilities/git';
 
 /**
  * Main class to handle the logic of the Project Templates
@@ -97,7 +97,7 @@ export default class ProjectTemplatesPlugin {
         let gitPrefix: string = this.config.get('gitPrefix', 'Git:');
 
         let repositores: string[] = this.config.get('gitRepositories', []).map( function (item: string) {
-            let name: string = item.substr(item.lastIndexOf('/') + 1);
+            let name: string = getRepositoryName(item);
             return `${gitPrefix} ${name}`;
         }).filter(function (filename) {
             return filename !== null;
@@ -269,6 +269,8 @@ export default class ProjectTemplatesPlugin {
         let templateRoot = await this.getTemplatesDir();
 
         if (includeGit) {
+            await this.createGitDirIfNotExists();
+
             const repos = await this.getRepositories();
             templates = templates.concat(repos);
         }
@@ -509,7 +511,7 @@ export default class ProjectTemplatesPlugin {
         let gitPrefix = this.config.get('gitPrefix', 'Git:');
         if (template.startsWith(gitPrefix)) {
             let name = template.replace(`${gitPrefix} `, '');
-            let repo = this.config.get('gitRepositories', []).find((item: string) => item.endsWith(name));
+            let repo = this.config.get('gitRepositories', []).find((item: string) => item.indexOf(name) > -1);
 
             if (!repo) {
                 vscode.window.showErrorMessage("Template '" + template + "' was not found.");

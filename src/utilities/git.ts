@@ -5,7 +5,7 @@ import path = require('path');
 
 export async function cloneOrPull(repo : string, dest : string) {
     return new Promise((resolve, reject) => {
-      const name = repo.substr(repo.lastIndexOf('/') + 1);
+      const name = getRepositoryName(repo);
       const repoDest = path.join(dest, name);
 
       let process;
@@ -15,13 +15,17 @@ export async function cloneOrPull(repo : string, dest : string) {
       } else {
         process = spawn('git', ['pull', '-f'], { cwd: repoDest });
       }
-      
+
       process.stdout.on('data', function (data) {
         console.log('process stdout: ' + data);
       });
 
       process.stderr.on('data', function (data) {
         console.log('process stderr: ' + data);
+      });
+
+      process.on('error', function (err) {
+        reject(err);
       });
 
       process.on('exit', function (code) {
@@ -32,4 +36,9 @@ export async function cloneOrPull(repo : string, dest : string) {
         resolve();
       });
     });
+}
+
+export function getRepositoryName(url: string): string {
+  console.log(url, url.lastIndexOf('/'), url.lastIndexOf('.'));
+  return url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
 }
