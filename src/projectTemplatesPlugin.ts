@@ -89,6 +89,24 @@ export default class ProjectTemplatesPlugin {
     }
 
     /**
+     * Returns a list of available git project templates by reading the git settings.
+     * @returns list of git templates found
+     */
+    public async getRepositories(): Promise<string[]> {
+
+        let gitPrefix: string = this.config.get('gitPrefix', 'Git:');
+
+        let repositores: string[] = this.config.get('gitRepositories', []).map( function (item: string) {
+            let name: string = item.substr(item.lastIndexOf('/') + 1);
+            return `${gitPrefix} ${name}`;
+        }).filter(function (filename) {
+            return filename !== null;
+        }) as string[];
+
+        return repositores;
+    }
+
+    /**
      * Returns the templates directory location.
      * If no user configuration is found, the extension will look for
      * templates in USER_DATA_DIR/Code/ProjectTemplates.
