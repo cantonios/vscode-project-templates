@@ -34,8 +34,8 @@
                 "isDefault": true
             },
             "command": "make",
-            "args": [
-                "rebuild"
+            "dependsOn": [
+                "Clean C/C++ Project"
             ],
             "problemMatcher": [
                 "$gcc"
