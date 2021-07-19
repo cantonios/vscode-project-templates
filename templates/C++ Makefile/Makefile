@@ -29,6 +29,7 @@ ifeq ($(OS),Windows_NT)
 	MKDIR_CALL  = if not exist "$(subst /,\,$(1))" mkdir "$(subst /,\,$(1))"
 	FIND_CALL   = dir /b/s "$(subst /,\,$(1))"
 	PATH_CALL   = $(subst /,\,$(1))
+	EXECUTABLE  := $(EXECUTABLE).exe
 else
 	RM_CALL     = rm -rf $(1)
 	MKDIR_CALL  = mkdir -p $(1)
