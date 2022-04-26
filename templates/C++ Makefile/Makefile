@@ -44,8 +44,6 @@ all:  $(TARGET)
 
 deps: $(CPP_DEPENDS)
 
-rebuild: clean all
-
 run: all
 	$(call PATH_CALL,$(TARGET))
 
